@@ -1,0 +1,137 @@
+---
+title: Date.prototype.getTimezoneOffset()
+slug: Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
+tags:
+- Date
+- JavaScript
+- Method
+- Prototype
+- Reference
+---
+<div>{{JSRef}}</div>
+
+<p>The <strong><code>getTimezoneOffset()</code></strong> method returns the difference, in minutes, between a date as evaluated in the UTC time zone, and the same date as evaluated in the local time zone.</p>
+
+<div>{{EmbedInteractiveExample("pages/js/date-gettimezoneoffset.html")}}</div>
+
+<h2 id="Syntax">Syntax</h2>
+
+<pre class="syntaxbox notranslate"><var>date</var>.getTimezoneOffset()</pre>
+
+<h3 id="Return_value">Return value</h3>
+
+<p>The difference, in minutes, between <var>date</var>, as evaluated in the UTC time zone, and as evaluated in the local time zone.</p>
+
+<h2 id="Description">Description</h2>
+
+<p><code><var>date</var>.getTimezoneOffset()</code> returns the difference, in minutes, between <var>date</var> as evaluated in the UTC time zone, and <var>date</var> as evaluated in the local time zone — that is, the time zone of the host system in which the browser is being used (if the code is run from the Web in a browser), or otherwise the host system of whatever JavaScript runtime (for example, a Node.js environment) the code is executed in.</p>
+
+<h3>Negative values and positive values</h3>
+
+<p>The number of minutes returned by <code>getTimezoneOffset()</code> is positive if the local time zone is behind UTC, and negative if the local time zone is ahead of UTC. For example, for UTC+10, <code>-600</code> will be returned.</p>
+
+<table class="standard-table">
+ <thead>
+  <tr>
+   <th scope="row">Current time zone</th>
+   <th scope="col">UTC-8</th>
+   <th scope="col">UTC</th>
+   <th scope="col">UTC+3</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr>
+   <th scope="row">Return Value</th>
+   <td>480</td>
+   <td>0</td>
+   <td>-180</td>
+  </tr>
+ </tbody>
+</table>
+
+<h3>Varied results in Daylight Saving Time (DST) time zones</h3>
+
+<p>In a time zone that annually shifts in and out of Daylight Saving Time (DST), the number of minutes returned by calling <code>getTimezoneOffset()</code> can vary. Here’s an example:</p>
+
+<pre class="brush: js">// On a host system running in the 'Europe/Berlin' time zone
+
+const dateBeforeDST = new Date('2021-03-01');
+dateBeforeDST.toISOString();                      // Returns '2021-03-01T00:00:00.000Z'
+dateBeforeDST.getTimezoneOffset();                // Returns -60
+Intl.DateTimeFormat().resolvedOptions().timeZone; // Returns 'Europe/Berlin'
+
+const dateDuringDST = new Date('2021-05-01');
+dateDuringDST.toISOString();                      // Returns '2021-05-01T00:00:00.000Z'
+dateDuringDST.getTimezoneOffset();                // Returns -120
+Intl.DateTimeFormat().resolvedOptions().timeZone; // Returns 'Europe/Berlin'
+</pre>
+
+<p>From that example, here are some key points:</p>
+
+<ul>
+  <li>The time zone doesn’t change; it’s Europe/Berlin regardless of the date being evaluated.</li>
+  <li>The created <code>Date</code> objects (<code>dateBeforeDST</code> and <code>dateDuringDST</code>) carry no time zone offset.</li>
+  <li>The time zone offset is evaluated on the basis of <em>what the local time was or will be on the given date</em>: specifically, on the difference between what the time in the UTC time zone was or will be on the given date, and what the local time in the Europe/Berlin time zone was or will be on the given date.</li> 
+</ul>
+
+<p>In other words: The time zone offset comes from the environment in which the <code>Date</code> object is evaluated, not from the <code>Date</code> object itself. So, doing an evaluation in the Europe/Berlin time zone of a date that takes place before the period when the Europe/Berlin time zone has shifted into DST produces the time zone offset "<code>-60</code>", while doing an evaluation in the Europe/Berlin time zone of a date that takes place <em>during</em> the period when the Europe/Berlin time zone has shifted into DST produces the time zone offset "<code>-120</code>".</p>
+
+</ul>
+
+<p>Contrast that Europe/Berlin time zone example with the following Asia/Tokyo example:</p>
+
+<pre class="brush: js">// On a host system running in the 'Asia/Tokyo' time zone
+
+const dateBeforeDST = new Date('2021-03-01');
+dateBeforeDST.toISOString();                      // Returns '2021-03-01T00:00:00.000Z'
+dateBeforeDST.getTimezoneOffset();                // Returns -540
+Intl.DateTimeFormat().resolvedOptions().timeZone; // Returns 'Asia/Tokyo'
+
+const dateDuringDST = new Date('2021-05-01');
+dateDuringDST.toISOString();                      // Returns '2021-05-01T00:00:00.000Z'
+dateBeforeDST.getTimezoneOffset();                // Returns -540
+Intl.DateTimeFormat().resolvedOptions().timeZone; // Returns 'Asia/Tokyo'
+</pre>
+
+<p>So in an Asia/Tokyo time zone environment, which doesn’t annually shift in and out of DST, calling <code>getTimezoneOffset()</code> will always return the same time zone offset, "<code>-540</code>", regardless of the date.</p>
+
+<ul>
+  <li>A <em><a href="https://en.wikipedia.org/wiki/UTC_offset">time zone offset</a></em> is simply a number indicating a difference in time relative to the UTC time zone. A time zone offset can be either a positive or negative number, and can be represented as a number of hours (as in, for example, <code>GMT+0900</code>) or — as is the case with <code>getTimezoneOffset()</code> — as a number of minutes (for example, <code>-540</code>).</li>
+</ul>
+
+ <p>Keep in mind, though, that the above explanations are a simplification. In implementations, the <a href="https://en.wikipedia.org/wiki/Tz_database">IANA time zone database</a> is used to determine the effect of DST on the calculation of the time-zone difference.</p>
+
+<p>And also keep in mind that <code>getTimezoneOffset()</code> doesn’t return a {{Glossary("time zone")}} — instead it returns a {{Glossary("time zone offset")}}. To determine the configured time zone, you can use the following code:</p>
+
+<pre class="brush: js">Intl.DateTimeFormat().resolvedOptions().timeZone</pre>
+
+<h2 id="Specifications">Specifications</h2>
+
+<table class="standard-table">
+  <thead>
+    <tr>
+      <th scope="col">Specification</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{SpecName('ESDraft', '#sec-date.prototype.gettimezoneoffset',
+        'Date.prototype.getTimezoneOffset')}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+
+<p class="hidden">The compatibility table in this page is generated from structured data.
+  If you'd like to contribute to the data, please check out <a
+    href="https://github.com/mdn/browser-compat-data">https://github.com/mdn/browser-compat-data</a>
+  and send us a pull request.</p>
+
+<p>{{Compat("javascript.builtins.Date.getTimezoneOffset")}}</p>
+
+<h2 id="See_also">See also</h2>
+
+<ul>
+  <li>{{jsxref("Date")}}</li>
+</ul>

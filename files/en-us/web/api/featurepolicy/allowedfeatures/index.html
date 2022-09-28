@@ -1,0 +1,64 @@
+---
+title: FeaturePolicy.allowedFeatures()
+slug: Web/API/FeaturePolicy/allowedFeatures
+tags:
+- API
+- Directive
+- Feature Policy
+- Feature-Policy
+- FeaturePolicy
+- Permissions-Policy
+- Reference
+browser-compat: api.FeaturePolicy.allowedFeatures
+---
+<p>{{APIRef("Feature Policy API")}}{{SeeCompatTable}}</p>
+
+<p><span class="seoSummary">The <strong><code>allowedFeatures()</code></strong> method of
+    the {{DOMxRef("FeaturePolicy")}} interface returns a list of directive names of all
+    features allowed by the permissions policy.enables introspection of individual directives
+    of the Permissions Policy it is run on. As such, <code>allowedFeatures()</code> method
+    returns a subset of directives returned by {{DOMxRef("FeaturePolicy.features",
+    "features()")}}.</span></p>
+
+<div class="note">
+  <p>The <code>Permissions-Policy</code> header was previously named <code>Feature-Policy</code>. This API as well as some linked-to articles and demos still use the older name.</p>
+</div>
+
+<h2 id="Syntax">Syntax</h2>
+
+<pre class="brush: js">const allowed = <em>FeaturePolicy</em>.allowedFeatures()
+</pre>
+
+<h3 id="Parameters">Parameters</h3>
+
+<p id="Feature_name">None.</p>
+
+<h3 id="Return_value">Return value</h3>
+
+<p>An array of strings representing the Permissions Policy directive names that are allowed by
+  the Permissions Policy this method is called on.</p>
+
+<h2 id="Example">Example</h2>
+
+<p>The following example logs all the allowed directives for the current document. Please
+  note that these features might be restricted by the Permissions API, if the user did not
+  grant the corresponding permission yet.</p>
+
+<pre class="brush: js">// First, get the Feature Policy object
+const featurePolicy = document.featurePolicy
+
+// Then query feature for a specific Permissions Policy
+const allowed = featurePolicy.allowedFeatures()
+
+for (const directive of allowed){
+  console.log(directive)
+}
+</pre>
+
+<h2 id="Specifications">Specifications</h2>
+
+{{Specifications}}
+
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+
+<p>{{Compat}}</p>
